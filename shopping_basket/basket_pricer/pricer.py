@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Dict, List
 
+from basket_pricer.exceptions import NegativeBasketPriceException
 from basket_pricer.interfaces import BaseCatalogueProvider, BaseOfferProvider
-from shopping_basket_tests.exceptions import NegativeBasketPriceException
 
 
 @dataclass
@@ -24,8 +24,14 @@ class BasketPricer:
     @staticmethod
     def _calculate_prices_for_basket_item(basket_item: Dict) -> Dict[str, Decimal]:
         discount = Decimal('0')
-        for offer in basket_item.get('offers') or []:
-            discount = max(discount, offer.calculate_discount(basket_item.get('price')))
+        for offer in basket_item.get('offers'):
+            discount = max(
+                discount,
+                offer.calculate_discount(
+                    basket_item.get('price'),
+                    basket_item.get('quantity')
+                )
+            )
 
         return {
             'sku': basket_item.get('sku'),
@@ -35,16 +41,13 @@ class BasketPricer:
 
     @staticmethod
     def _calculate_overal_sub_total(basket_items_prices: List[Dict]) -> Decimal:
-        sub_total = sum(item.get('sub_total') for item in basket_items_prices)
-        if sub_total < Decimal('0'):
-            raise NegativeBasketPriceException
-        return sub_total
+        return sum(item.get('sub_total') for item in basket_items_prices)
 
     @staticmethod
     def _calculate_overal_discount(basket_items_prices: List[Dict]) -> Decimal:
         return sum((item.get('discount') for item in basket_items_prices))
 
-    def calculate_basket_prices(self, basket: Dict[str, int]):
+    def calculate_basket_prices(self, basket: Dict[str, int]) -> Dict[str, Decimal]:
         """
         Return sub total, discount and total prices.
         Basket param is a dictionary where keys are product SKUs and values are quantities in the basket.
@@ -52,8 +55,14 @@ class BasketPricer:
         basket_items = self._prepare_basket_items(basket)
         calculated_basket_items_prices = [self._calculate_prices_for_basket_item(item) for item in basket_items]
 
+        sub_total = self._calculate_overal_sub_total(calculated_basket_items_prices)
+        discount = self._calculate_overal_discount(calculated_basket_items_prices)
+        total = sub_total - discount
+        if total < Decimal('0'):
+            raise NegativeBasketPriceException
+
         return {
-            'sub_total': self._calculate_overal_sub_total(calculated_basket_items_prices),
-            'discount': self._calculate_overal_discount(calculated_basket_items_prices),
-            'total': Decimal('0')
+            'sub_total': sub_total,
+            'discount': discount,
+            'total': total
         }

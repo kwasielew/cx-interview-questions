@@ -10,7 +10,7 @@ class BaseCatalogueProvider(ABC):
 
 class BaseOffer(ABC):
     @abstractmethod
-    def calculate_discount(self, price: Decimal) -> Decimal: ...
+    def calculate_discount(self, price: Decimal, quantity: int) -> Decimal: ...
 
 
 class BaseOfferProvider(ABC):
