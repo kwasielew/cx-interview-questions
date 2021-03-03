@@ -40,11 +40,11 @@ class BasketPricer:
         }
 
     @staticmethod
-    def _calculate_overal_sub_total(basket_items_prices: List[Dict]) -> Decimal:
+    def _calculate_overall_sub_total(basket_items_prices: List[Dict]) -> Decimal:
         return sum(item.get("sub_total") for item in basket_items_prices)
 
     @staticmethod
-    def _calculate_overal_discount(basket_items_prices: List[Dict]) -> Decimal:
+    def _calculate_overall_discount(basket_items_prices: List[Dict]) -> Decimal:
         return sum((item.get("discount") for item in basket_items_prices))
 
     def calculate_basket_prices(self, basket: Dict[str, int]) -> Dict[str, Decimal]:
@@ -57,8 +57,8 @@ class BasketPricer:
             self._calculate_prices_for_basket_item(item) for item in basket_items
         ]
 
-        sub_total = self._calculate_overal_sub_total(calculated_basket_items_prices)
-        discount = self._calculate_overal_discount(calculated_basket_items_prices)
+        sub_total = self._calculate_overall_sub_total(calculated_basket_items_prices)
+        discount = self._calculate_overall_discount(calculated_basket_items_prices)
         total = sub_total - discount
         if total < Decimal("0"):
             raise NegativeBasketPriceException
