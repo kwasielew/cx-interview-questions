@@ -14,38 +14,38 @@ class BasketPricer:
     def _prepare_basket_items(self, basket: Dict[str, int]) -> List[Dict]:
         return [
             {
-                'sku': sku,
-                'quantity': quantity,
-                'price': self.catalogue_provider.get_price(sku),
-                'offers': self.offer_provider.get_offers(sku)
-            } for sku, quantity in basket.items()
+                "sku": sku,
+                "quantity": quantity,
+                "price": self.catalogue_provider.get_price(sku),
+                "offers": self.offer_provider.get_offers(sku),
+            }
+            for sku, quantity in basket.items()
         ]
 
     @staticmethod
     def _calculate_prices_for_basket_item(basket_item: Dict) -> Dict[str, Decimal]:
-        discount = Decimal('0')
-        for offer in basket_item.get('offers'):
+        discount = Decimal("0")
+        for offer in basket_item.get("offers"):
             discount = max(
                 discount,
                 offer.calculate_discount(
-                    basket_item.get('price'),
-                    basket_item.get('quantity')
-                )
+                    basket_item.get("price"), basket_item.get("quantity")
+                ),
             )
 
         return {
-            'sku': basket_item.get('sku'),
-            'sub_total': basket_item.get('price') * basket_item.get('quantity'),
-            'discount': discount
+            "sku": basket_item.get("sku"),
+            "sub_total": basket_item.get("price") * basket_item.get("quantity"),
+            "discount": discount,
         }
 
     @staticmethod
     def _calculate_overal_sub_total(basket_items_prices: List[Dict]) -> Decimal:
-        return sum(item.get('sub_total') for item in basket_items_prices)
+        return sum(item.get("sub_total") for item in basket_items_prices)
 
     @staticmethod
     def _calculate_overal_discount(basket_items_prices: List[Dict]) -> Decimal:
-        return sum((item.get('discount') for item in basket_items_prices))
+        return sum((item.get("discount") for item in basket_items_prices))
 
     def calculate_basket_prices(self, basket: Dict[str, int]) -> Dict[str, Decimal]:
         """
@@ -53,16 +53,14 @@ class BasketPricer:
         Basket param is a dictionary where keys are product SKUs and values are quantities in the basket.
         """
         basket_items = self._prepare_basket_items(basket)
-        calculated_basket_items_prices = [self._calculate_prices_for_basket_item(item) for item in basket_items]
+        calculated_basket_items_prices = [
+            self._calculate_prices_for_basket_item(item) for item in basket_items
+        ]
 
         sub_total = self._calculate_overal_sub_total(calculated_basket_items_prices)
         discount = self._calculate_overal_discount(calculated_basket_items_prices)
         total = sub_total - discount
-        if total < Decimal('0'):
+        if total < Decimal("0"):
             raise NegativeBasketPriceException
 
-        return {
-            'sub_total': sub_total,
-            'discount': discount,
-            'total': total
-        }
+        return {"sub_total": sub_total, "discount": discount, "total": total}

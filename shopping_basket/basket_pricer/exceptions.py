@@ -1,3 +1,2 @@
-
 class NegativeBasketPriceException(Exception):
     pass
