@@ -3,7 +3,8 @@ from decimal import Decimal
 from typing import Dict, List
 
 from basket_pricer.exceptions import NegativeBasketPriceException
-from basket_pricer.interfaces import BaseCatalogueProvider, BaseOfferProvider
+from basket_pricer.catalogues_providers import BaseCatalogueProvider
+from basket_pricer.offer_providers import BaseOfferProvider
 
 
 @dataclass
@@ -34,7 +35,6 @@ class BasketPricer:
             )
 
         return {
-            "sku": basket_item.get("sku"),
             "sub_total": basket_item.get("price") * basket_item.get("quantity"),
             "discount": discount,
         }
@@ -49,8 +49,8 @@ class BasketPricer:
 
     def calculate_basket_prices(self, basket: Dict[str, int]) -> Dict[str, Decimal]:
         """
-        Return sub total, discount and total prices.
         Basket param is a dictionary where keys are product SKUs and values are quantities in the basket.
+        Return sub total, discount and total prices.
         """
         basket_items = self._prepare_basket_items(basket)
         calculated_basket_items_prices = [
