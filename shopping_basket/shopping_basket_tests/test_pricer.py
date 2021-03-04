@@ -34,18 +34,6 @@ def test_pricer_calculates_sub_total_from_basket_products():
     }
 
 
-def test_pricer_returns_raises_exception_when_product_is_not_in_catalogue():
-    catalogue_provider = CatalogueProvider({})
-    offer_provider = OfferProvider({})
-    basket = {"APPLE": 2}
-    pricer = BasketPricer(catalogue_provider, offer_provider)
-    assert pricer.calculate_basket_prices(basket) == {
-        "sub_total": Decimal("0"),
-        "discount": Decimal("0"),
-        "total": Decimal("0"),
-    }
-
-
 def test_pricer_returns_zero_prices_when_basket_is_empty():
     catalogue_provider = CatalogueProvider(
         {"APPLE": Decimal("5"), "CHEESE": Decimal("3")}
