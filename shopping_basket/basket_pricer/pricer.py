@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, List
 
 from basket_pricer.exceptions import NegativeBasketPriceException
@@ -41,11 +42,17 @@ class BasketPricer:
 
     @staticmethod
     def _calculate_overall_sub_total(basket_items_prices: List[Dict]) -> Decimal:
-        return sum(item.get("sub_total") for item in basket_items_prices)
+        sub_total = sum(
+            item.get("sub_total") for item in basket_items_prices
+        ) or Decimal("0")
+        return sub_total.quantize(Decimal(".00"), rounding=ROUND_HALF_UP)
 
     @staticmethod
     def _calculate_overall_discount(basket_items_prices: List[Dict]) -> Decimal:
-        return sum((item.get("discount") for item in basket_items_prices))
+        discount = sum(item.get("discount") for item in basket_items_prices) or Decimal(
+            "0"
+        )
+        return discount.quantize(Decimal(".00"), rounding=ROUND_HALF_UP)
 
     def calculate_basket_prices(self, basket: Dict[str, int]) -> Dict[str, Decimal]:
         """

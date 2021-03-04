@@ -14,6 +14,7 @@ class BaseOfferProvider(ABC):
 @dataclass
 class OfferProvider(BaseOfferProvider):
     """ Offers provider based on dictionary with SKU-list of offers mapping """
+
     sku_offers: Dict[str, List[BaseOffer]]
 
     def get_offers(self, sku: str) -> List[BaseOffer]:

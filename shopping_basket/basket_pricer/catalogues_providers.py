@@ -13,6 +13,7 @@ class BaseCatalogueProvider(ABC):
 @dataclass
 class CatalogueProvider(BaseCatalogueProvider):
     """ Catalogues provider which stores SKU-price mapping in dictionary """
+
     sku_price: Dict[str, Decimal]
 
     def get_price(self, sku: str) -> Decimal:
