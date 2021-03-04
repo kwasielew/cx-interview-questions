@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from decimal import Decimal, ROUND_HALF_UP
-from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, List
 
 from basket_pricer.exceptions import NegativeBasketPriceException
