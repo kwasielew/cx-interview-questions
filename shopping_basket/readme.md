@@ -54,10 +54,10 @@ To write your own offer provider inherit from `BaseOfferProvider` abstract class
 Instance of `BasketPricer` has single 'public' method - `calculate_basket_prices`. 
 It accepts basket parameter in form of primitive data structure dictionary, where keys are SKUs and values are quantities.
 
-First it fetches price and offers for every product in the basket only. There is no need to pass whole catalogue and 
-all offers to the constructor or calculate method.
+First it fetches price and offers for every product in the basket (only). There is no need to pass whole catalogue and 
+all offers to the constructor.
 
-Next it calculas subtotal and discount for every product in the basket.
+Next it calculates subtotal and discount for every product in the basket.
 
 At the end it sums up prices and returns them as a dictionary.
 
